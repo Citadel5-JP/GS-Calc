@@ -13,17 +13,15 @@ jobs:
         env:
           WINGET_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
         run: |
-          Invoke-WebRequest -Uri "https://aka.ms" -OutFile "wingetcreate.exe"
+          # 1. Download the tool directly from Microsoft's stable production release link
+          Invoke-WebRequest -Uri "https://github.com" -OutFile "wingetcreate.exe"
+          
+          # 2. Extract your clean installer download URL from the GitHub event
           $githubEvent = Get-Content '${{ github.event_path }}' | ConvertFrom-Json
-          
-          # 1. Grab your direct .exe installer link
           $installerUrl = $githubEvent.release.assets | Where-Object { $_.name -ilike "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
-          
-          # 2. Safely structure the architecture override without breaking PowerShell's pipeline
-          $overrideUrl = "{0}|x64" -f $installerUrl
           
           # 3. Pull your pure version string cleanly
           $cleanVersion = "${{ github.event.release.tag_name }}"
           
-          # 4. Transmit using double quotes to keep the pipe literal
-          .\wingetcreate.exe update Citadel5-JP.GS-Calc -s -v $cleanVersion -u "$overrideUrl" -t $env:WINGET_TOKEN
+          # 4. Use Microsoft's built-in architecture switch to guarantee an error-free submission
+          .\wingetcreate.exe update Citadel5-JP.GS-Calc -s -v $cleanVersion -u $installerUrl --architecture x64 -t $env:WINGET_TOKEN
