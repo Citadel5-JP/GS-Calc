@@ -1,0 +1,14 @@
+name: Publish release to WinGet
+on:
+  release:
+    types: [released] # Triggers only when you publish a new version
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - uses: vedantmgoyal9/winget-releaser@v2
+        with:
+          identifier: Citadel5-JP.GS-Calc
+          installers-regex: '\.exe$'          # Matches your .exe asset. Use '\.msi$' if you switch to MSI
+          token: ${{ secrets.WINGET_ACC_TOKEN }}
