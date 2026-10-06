@@ -13,11 +13,11 @@ jobs:
         env:
           WINGET_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
         run: |
-          # 1. Use the pre-installed native WinGet tool to safely pull Manifest Creator
+          # 1. Safely pull Manifest Creator via the system layer
           winget install Microsoft.WingetCreate --accept-source-agreements --accept-package-agreements
           
-          # 2. Extract your clean installer download URL from the GitHub Release event
-          $githubEvent = Get-Content '$env:GITHUB_EVENT_PATH' | ConvertFrom-Json
+          # 2. Extract your clean installer download URL using the corrected unquoted path variable
+          $githubEvent = Get-Content $env:GITHUB_EVENT_PATH | ConvertFrom-Json
           $installerUrl = $githubEvent.release.assets | Where-Object { $_.name -like "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
           
           # 3. Pull your version tag cleanly
