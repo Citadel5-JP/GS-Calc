@@ -11,20 +11,22 @@ jobs:
     steps:
       - name: Install and Run WinGetCreate
         env:
-          # Mapping the token to this specific variable removes the logging security warning entirely
-          WINGET_GITHUB_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
+          WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
         run: |
           # 1. Pull the Manifest Creator utility using the native Windows distribution engine
           winget install Microsoft.WingetCreate --accept-source-agreements --accept-package-agreements
           
-          # 2. Extract your pure version tag string
+          # 2. Convert the GitHub release assets list safely using native JSON processing
+          $assetsJson = '${{ toJSON(github.event.release.assets) }}' | ConvertFrom-Json
+          
+          # 3. Extract the clean download URL specifically for your installer file
+          $installerUrl = $assetsJson | Where-Object { $_.name -like "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
+          
+          # 4. Pull your version tag cleanly
           $cleanVersion = "${{ github.event.release.tag_name }}"
           
-          # 3. Pull your direct installer link using GitHub's built-in array token parsing shortcuts
-          $installerUrl = "${{ github.event.release.assets[0].browser_download_url }}"
+          # 5. Append your required Win64 architecture constraint override
+          $overrideUrl = $installerUrl + "|x64"
           
-          # 4. Securely append your required Win64 architecture constraint override
-          $overrideUrl = "${installerUrl}|x64"
-          
-          # 5. Execute the clean structural update payload command without using the legacy token switches
-          wingetcreate update Citadel5-JP.GS-Calc -s -v $cleanVersion -u $overrideUrl
+          # 6. Run the tool using its system-wide execution path alias
+          wingetcreate update Citadel5-JP.GS-Calc -s -v $cleanVersion -u "$overrideUrl"
