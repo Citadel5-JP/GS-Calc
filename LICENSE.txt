@@ -1,0 +1,76 @@
+"GS-Calc LIMITED TRIAL VERSION" LICENSE AGREEMENT
+  FOR USE AND DISTRIBUTION
+
+THIS END-USER LICENSE AGREEMENT IS A LEGAL AGREEMENT
+BETWEEN YOU (AN INDIVIDUAL OR A SINGLE ENTITY) AND
+Citadel5  FOR THE Citadel5 SOFTWARE PRODUCT
+("SOFTWARE PRODUCT" OR "SOFTWARE") IDENTIFIED
+ABOVE. THE SOFTWARE PRODUCT INCLUDES COMPUTER
+SOFTWARE, ANY ASSOCIATED PRINTED MATERIALS AND ANY
+"ONLINE" OR ELECTRONIC DOCUMENTATION. BY INSTALLING,
+COPYING OR USING THE SOFTWARE PRODUCT, YOU AGREE
+TO BE BOUND BY TERMS OF THIS AGREEMENT.
+
+THE SOFTWARE IS OWNED BY Citadel5 AND IS
+PROTECTED BY COPYRIGHT LAWS AND INTERNATIONAL
+TREATIES, AS WELL AS OTHER INTELLECTUAL PROPERTY
+LAWS AND TREATIES. THE SOFTWARE IS LICENSED, NOT SOLD.
+
+DEFINITION
+
+  The term "LIMITED TRIAL VERSION" or "EVALUATION VERSION"
+  used here shall mean a copy of the SOFTWARE you obtained for
+  evaluation purposes. The LIMITED TRIAL VERSION is described
+  as "Limited Trial Version" in its "About" dialog
+  box and has some functional limitations.
+
+TRIAL USE LICENSE
+
+  This License Agreement grants you the right to use the
+  EVALUATION VERSION for evaluation purposes for a period
+  of 30 days. The EVALUATION VERSION is in use
+  on a computer when it is loaded into temporary memory
+  (e.i. RAM) of that computer. After 30 days from the date
+  when you use the EVALUATION VERSION for the first time,
+  you must either purchase a license for the full, unlimited
+  version of SOFTWARE or uninstall the EVALUATION VERSION.
+
+COPYRIGHT AND OTHER RIGHTS AND LIMITATIONS
+
+  You must treat the EVALUATION VERSION like any other
+  copyrighted material. You may not reverse engineer,
+  decompile, modify, disassemble or make copies
+  of the EVALUATION VERSION except as provided elsewhere
+  in this agreement. All rights not expressly granted in
+  this agreement are reserved to Citadel5.
+
+LIMITED DISTRIBUTION LICENSE
+
+  You may make copies of the EVALUATION VERSION and give
+  it to others, or distribute it in any possible way
+  (including web sites/services and CD-ROMs) as long as you
+  distribute the original EVALUATION VERSION file available
+  directly from http://www.citadel5.com.
+
+6. DISCLAIMER OF WARRANTY
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY
+  OF ANY KIND. YOU BEAR THE RISK OF USING IT. Citadel5 DISCLAIMS
+  ALL IMPLIED WARRANTIES INCLUDING ANY IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+  TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW,
+  IN NO EVENT SHALL Citadel5 OR ANYONE ELSE
+  INVOLVED IN THE PRODUCTION OR DELIVERY OF THE
+  SOFTWARE BE LIABLE FOR ANY SPECIAL, INCIDENTAL,
+  INDIRECT, OR CONSEQUENTIAL DAMAGES WHATSOEVER
+  (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS
+  OF BUSINESS PROFITS, BUSINESS INTERRUPTION, LOSS
+  OF BUSINESS INFORMATION, OR OTHER PECUNIARY LOSS)
+  ARISING OUT OF THE USE OF OR INABILITY TO USE THE
+  SOFTWARE, EVEN IF Citadel5 HAS BEEN ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGES.
+
+____________________________________________________________
+
+Copyright (C) 2026 Citadel5 Ltd, http://www.citadel5.com
