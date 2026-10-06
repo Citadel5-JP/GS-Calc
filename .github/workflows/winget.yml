@@ -9,23 +9,16 @@ jobs:
   publish:
     runs-on: windows-latest
     steps:
+      # 1. This clones your repository onto the server so the command-line tools don't crash
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Install WinGetCreate Tool
         run: winget install Microsoft.WingetCreate --accept-source-agreements --accept-package-agreements
 
       - name: Submit Package Update to Microsoft
         env:
           WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Built-in token that allows the 'gh' command to read your files
+        # The single-line command format maps the variables securely before running
         run: |
-          # 1. Pull the version number using the native system variable
-          $cleanVersion = $env:GITHUB_REF_NAME
-          
-          # 2. Use GitHub's official command-line tool to grab the exact .exe installer link 
-          # This works perfectly on edited, created, or published events every single time!
-          $installerUrl = gh release view $cleanVersion --json assets --jq '.assets[] | select(.name | endswith(".exe")) | .url'
-          
-          # 3. Create the direct pipe configuration string needed for your Win64 application
-          $overrideUrl = $installerUrl + "|x64"
-          
-          # 4. Push the update cleanly straight to Microsoft
-          wingetcreate update Citadel5-JP.GS-Calc -s -v $cleanVersion -u "$overrideUrl"
+          wingetcreate update Citadel5-JP.GS-Calc -s -v ${{ github.event.release.tag_name }} -u "${{ github.event.release.assets[0].browser_download_url }}|x64"
