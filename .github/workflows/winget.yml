@@ -13,15 +13,16 @@ jobs:
         env:
           WINGET_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
         run: |
-          # 1. Download the official tool using Microsoft's smart download router
+          # 1. Fetch the official Microsoft WinGet tool using their smart download router
           Invoke-WebRequest -Uri "https://aka.ms/wingetcreate/latest" -OutFile "wingetcreate.exe"
           
-          # 2. Extract your clean installer download URL from the GitHub event
+          # 2. Extract your clean installer download URL from the GitHub Release event
           $githubEvent = Get-Content '${{ github.event_path }}' | ConvertFrom-Json
           $installerUrl = $githubEvent.release.assets | Where-Object { $_.name -ilike "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
           
           # 3. Pull your pure version string cleanly
           $cleanVersion = "${{ github.event.release.tag_name }}"
           
-          # 4. Transmit using a PowerShell backtick-escaped string to pass the literal pipe safely
-          .\wingetcreate.exe update Citadel5-JP.GS-Calc -s -v $cleanVersion -u "$installerUrl`|x64" -t $env:WINGET_TOKEN
+          # 4. Transmit your actual WinGet ID with a clean, raw argument string configuration
+          # The single quotes wrapping the outside keep the pipe character safe from PowerShell string slicing blocks
+          .\wingetcreate.exe update Citadel5-JP.GS-Calc -s -v $cleanVersion -u ($installerUrl + '|x64') -t $env:WINGET_TOKEN
