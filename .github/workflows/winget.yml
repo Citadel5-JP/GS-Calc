@@ -9,23 +9,11 @@ jobs:
   publish:
     runs-on: windows-latest
     steps:
-      - name: Install and Run WinGetCreate
+      - name: Install WinGetCreate Tool
+        run: winget install Microsoft.WingetCreate --accept-source-agreements --accept-package-agreements
+
+      - name: Submit Package Update to Microsoft
         env:
           WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
-        run: |
-          # 1. Pull the Manifest Creator utility using the native Windows distribution engine
-          winget install Microsoft.WingetCreate --accept-source-agreements --accept-package-agreements
-          
-          # 2. Get the clean version tag directly from GitHub's system memory
-          $cleanVersion = $env:GITHUB_REF_NAME
-          
-          # 3. Pull the download URL directly from GitHub's live public API
-          $apiUrl = "https://github.com"
-          $releaseInfo = Invoke-RestMethod -Uri $apiUrl
-          $installerUrl = $releaseInfo.assets | Where-Object { $_.name -like "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
-          
-          # 4. Construct the required Win64 architecture constraint override string safely
-          $overrideUrl = $installerUrl + "|x64"
-          
-          # 5. Execute the update using the system-wide tool alias
-          wingetcreate update Citadel5-JP.GS-Calc -s -v $cleanVersion -u "$overrideUrl"
+        # This single-line format forces GitHub to inject the actual URL string directly into the command before running it
+        run: wingetcreate update Citadel5-JP.GS-Calc -s -v ${{ github.event.release.tag_name }} -u "${{ github.event.release.assets[0].browser_download_url }}|x64"
