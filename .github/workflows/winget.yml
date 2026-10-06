@@ -1,14 +1,19 @@
 name: Publish release to WinGet
+
 on:
   release:
-    types: [released] # Triggers only when you publish a new version
+    types: [published, edited]
+  workflow_dispatch:
 
 jobs:
   publish:
     runs-on: windows-latest
     steps:
-      - uses: vedantmgoyal9/winget-releaser@v2
-        with:
-          identifier: Citadel5-JP.GS-Calc
-          installers-regex: '\.exe$'          # Matches your .exe asset. Use '\.msi$' if you switch to MSI
-          token: ${{ secrets.WINGET_ACC_TOKEN }}
+      - name: Download and Run WinGetCreate
+        env:
+          WINGET_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
+        run: |
+          Invoke-WebRequest -Uri "https://aka.ms/wingetcreate/latest" -OutFile "wingetcreate.exe"
+          $githubEvent = Get-Content '${{ github.event_path }}' | ConvertFrom-Json
+          $installerUrl = $githubEvent.release.assets | Where-Object { $_.name -like "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
+          .\wingetcreate.exe update Citadel5-JP.GS-Calc -s -v "${{ github.event.release.tag_name }}" -u $installerUrl -t $env:WINGET_TOKEN
