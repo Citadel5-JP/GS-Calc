@@ -16,17 +16,16 @@ jobs:
           # 1. Pull the Manifest Creator utility using the native Windows distribution engine
           winget install Microsoft.WingetCreate --accept-source-agreements --accept-package-agreements
           
-          # 2. Convert the GitHub release assets list safely using native JSON processing
-          $assetsJson = '${{ toJSON(github.event.release.assets) }}' | ConvertFrom-Json
+          # 2. Get the clean version tag directly from GitHub's system memory
+          $cleanVersion = $env:GITHUB_REF_NAME
           
-          # 3. Extract the clean download URL specifically for your installer file
-          $installerUrl = $assetsJson | Where-Object { $_.name -like "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
+          # 3. Pull the download URL directly from GitHub's live public API
+          $apiUrl = "https://github.com"
+          $releaseInfo = Invoke-RestMethod -Uri $apiUrl
+          $installerUrl = $releaseInfo.assets | Where-Object { $_.name -like "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
           
-          # 4. Pull your version tag cleanly
-          $cleanVersion = "${{ github.event.release.tag_name }}"
-          
-          # 5. Append your required Win64 architecture constraint override
+          # 4. Construct the required Win64 architecture constraint override string safely
           $overrideUrl = $installerUrl + "|x64"
           
-          # 6. Run the tool using its system-wide execution path alias
+          # 5. Execute the update using the system-wide tool alias
           wingetcreate update Citadel5-JP.GS-Calc -s -v $cleanVersion -u "$overrideUrl"
