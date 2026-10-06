@@ -13,21 +13,17 @@ jobs:
         env:
           WINGET_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
         run: |
-          # 1. Download the official WinGet tool via Microsoft's stable short-link router
-          Invoke-WebRequest -Uri "https://aka.ms/wingetcreate/latest" -OutFile "wingetcreate.exe"
+          # 1. Fetch the official Microsoft WinGet tool using their smart download router
+          Invoke-WebRequest -Uri "https://aka.ms" -OutFile "wingetcreate.exe"
           
-          # 2. Pull the live version tag string from your release event metadata
+          # 2. Pull your pure version string cleanly
           $cleanVersion = "${{ github.event.release.tag_name }}"
           
-          # 3. Securely query the direct asset download URL using GitHub's live public API 
-          # This replaces the broken JSON event file lookups completely!
-          $repoApiUrl = "https://github.com{{ github.repository }}/releases/tags/$cleanVersion"
+          # 3. Securely query the direct asset download URL using GitHub's native environment paths
+          $repoApiUrl = "https://github.com"
           $releaseData = Invoke-RestMethod -Uri $repoApiUrl
           $installerUrl = $releaseData.assets | Where-Object { $_.name -like "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
           
-          # 4. Debug check to confirm the URL populated successfully in the terminal window
-          Write-Host "Discovered Live Installer URL: $installerUrl"
-          
-          # 5. Execute the update using an explicit concatenation statement to map the architecture override
+          # 4. Transmit your actual WinGet ID with a clean, raw argument string configuration
           $overrideUrl = $installerUrl + "|x64"
           .\wingetcreate.exe update Citadel5-JP.GS-Calc -s -v $cleanVersion -u "$overrideUrl" -t $env:WINGET_TOKEN
