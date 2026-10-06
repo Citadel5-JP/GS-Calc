@@ -13,15 +13,18 @@ jobs:
         env:
           WINGET_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
         run: |
-          # 1. Download the official tool using Microsoft's smart download router
+          # 1. Download the tool directly from Microsoft's production short-link
           Invoke-WebRequest -Uri "https://aka.ms/wingetcreate/latest" -OutFile "wingetcreate.exe"
           
           # 2. Extract your clean installer download URL from the GitHub event
           $githubEvent = Get-Content '${{ github.event_path }}' | ConvertFrom-Json
           $installerUrl = $githubEvent.release.assets | Where-Object { $_.name -ilike "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
           
-          # 3. Pull your pure version string cleanly
+          # 3. Create the exact pipe configuration string needed for a Win64 application
+          $overrideUrl = "$installerUrl|x64"
+          
+          # 4. Pull your pure version string cleanly
           $cleanVersion = "${{ github.event.release.tag_name }}"
           
-          # 4. Use Microsoft's dedicated --architecture flag to declare it as a Win64 application
-          .\wingetcreate.exe update Citadel5-JP.GS-Calc -s -v $cleanVersion -u $installerUrl --architecture x64 -t $env:WINGET_TOKEN
+          # 5. Transmit using a hard single-quoted argument to prevent string splicing errors
+          .\wingetcreate.exe update Citadel5-JP.GS-Calc -s -v $cleanVersion -u '$overrideUrl' -t $env:WINGET_TOKEN
