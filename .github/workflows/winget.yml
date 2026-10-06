@@ -13,7 +13,10 @@ jobs:
         env:
           WINGET_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
         run: |
-          Invoke-WebRequest -Uri "https://aka.ms/wingetcreate/latest" -OutFile "wingetcreate.exe"
+          Invoke-WebRequest -Uri "https://aka.ms" -OutFile "wingetcreate.exe"
           $githubEvent = Get-Content '${{ github.event_path }}' | ConvertFrom-Json
-          $installerUrl = $githubEvent.release.assets | Where-Object { $_.name -like "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
+          
+          # Improved: This looks for .exe OR .msi and ignores uppercase/lowercase issues
+          $installerUrl = $githubEvent.release.assets | Where-Object { $_.name -ilike "*.exe" -or $_.name -ilike "*.msi" } | Select-Object -ExpandProperty browser_download_url -First 1
+          
           .\wingetcreate.exe update Citadel5-JP.GS-Calc -s -v "${{ github.event.release.tag_name }}" -u $installerUrl -t $env:WINGET_TOKEN
