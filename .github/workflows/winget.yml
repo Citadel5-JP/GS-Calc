@@ -23,6 +23,5 @@ jobs:
           # 3. Pull your pure version string cleanly
           $cleanVersion = "${{ github.event.release.tag_name }}"
           
-          # 4. Transmit your actual WinGet ID with a clean, raw argument string configuration
-          # The single quotes wrapping the outside keep the pipe character safe from PowerShell string slicing blocks
-          .\wingetcreate.exe update Citadel5-JP.GS-Calc -s -v $cleanVersion -u ($installerUrl + '|x64') -t $env:WINGET_TOKEN
+          # 4. Transmit with an escaped backtick vertical bar to prevent shell pipeline slicing errors
+          .\wingetcreate.exe update Citadel5-JP.GS-Calc -s -v $cleanVersion -u "$installerUrl`|x64" -t $env:WINGET_TOKEN
