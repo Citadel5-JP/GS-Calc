@@ -13,19 +13,17 @@ jobs:
         env:
           WINGET_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
         run: |
-          Invoke-WebRequest -Uri "https://aka.ms/wingetcreate/latest" -OutFile "wingetcreate.exe"
+          Invoke-WebRequest -Uri "https://aka.ms" -OutFile "wingetcreate.exe"
           $githubEvent = Get-Content '${{ github.event_path }}' | ConvertFrom-Json
           
-          # 1. Capture your direct .exe installer link
+          # 1. Grab your direct .exe installer link
           $installerUrl = $githubEvent.release.assets | Where-Object { $_.name -ilike "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
           
-          # 2. Force the architecture override rule to satisfy Microsoft's validator
-          # (Change 'x64' below to 'x86' if your application is a 32-bit build)
-          $finalUrl = "$installerUrl|x64"
+          # 2. Safely structure the architecture override without breaking PowerShell's pipeline
+          $overrideUrl = "{0}|x64" -f $installerUrl
           
           # 3. Pull your pure version string cleanly
           $cleanVersion = "${{ github.event.release.tag_name }}"
           
-          # 4. Transmit the aligned arguments to the validation queue
-          # Enclosing the URL argument in double quotes prevents the pipe character from breaking
-          .\wingetcreate.exe update Citadel5-JP.GS-Calc -s -v $cleanVersion -u "$finalUrl" -t $env:WINGET_TOKEN
+          # 4. Transmit using double quotes to keep the pipe literal
+          .\wingetcreate.exe update Citadel5-JP.GS-Calc -s -v $cleanVersion -u "$overrideUrl" -t $env:WINGET_TOKEN
