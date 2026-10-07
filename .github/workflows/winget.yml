@@ -18,19 +18,18 @@ jobs:
       - name: Submit Package Update to Microsoft
         env:
           WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Built-in token that lets the 'gh' tool read your live repository
         shell: pwsh
         run: |
-          # 1. Read the raw GitHub event JSON payload safely from the runner disk
-          $githubEvent = Get-Content $env:GITHUB_EVENT_PATH | ConvertFrom-Json
+          # 1. Grab your version tag name directly from the environment variables
+          $cleanVersion = $env:GITHUB_REF_NAME
           
-          # 2. Dynamically locate the .exe download link from the assets list (works flawlessly on edits or fresh releases)
-          $installerUrl = $githubEvent.release.assets | Where-Object { $_.name -like "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
+          # 2. Query GitHub's official command line utility to extract your live .exe download link
+          # This completely fixes the empty-payload bug on edited events!
+          $installerUrl = gh release view $cleanVersion --json assets --jq '.assets[] | select(.name | endswith(".exe")) | .url'
           
-          # 3. Pull the version tag safely from the event
-          $cleanVersion = $githubEvent.release.tag_name
-          
-          # 4. Force the Win64 architecture constraint override format
+          # 3. Explicitly construct the required Win64 architecture constraint override string safely
           $overrideUrl = "${installerUrl}|x64"
           
-          # 5. Execute the update using system variables
+          # 4. Transmit the aligned arguments to Microsoft's validation queue
           wingetcreate update Citadel5-JP.GS-Calc -s -v $cleanVersion -u $overrideUrl
