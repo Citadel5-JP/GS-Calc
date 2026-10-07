@@ -9,16 +9,28 @@ jobs:
   publish:
     runs-on: windows-latest
     steps:
-      # 1. This clones your repository onto the server so the command-line tools don't crash
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Install WinGetCreate Tool
-        run: winget install Microsoft.WingetCreate --accept-source-agreements --accept-package-agreements
+        run: winget install Microsoft.WingetCreate --silent --disable-interactivity --accept-source-agreements --accept-package-agreements
 
       - name: Submit Package Update to Microsoft
         env:
           WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
-        # The single-line command format maps the variables securely before running
+        shell: pwsh
         run: |
-          wingetcreate update Citadel5-JP.GS-Calc -s -v ${{ github.event.release.tag_name }} -u "${{ github.event.release.assets[0].browser_download_url }}|x64"
+          # 1. Read the raw GitHub event JSON payload safely from the runner disk
+          $githubEvent = Get-Content $env:GITHUB_EVENT_PATH | ConvertFrom-Json
+          
+          # 2. Dynamically locate the .exe download link from the assets list (works flawlessly on edits or fresh releases)
+          $installerUrl = $githubEvent.release.assets | Where-Object { $_.name -like "*.exe" } | Select-Object -ExpandProperty browser_download_url -First 1
+          
+          # 3. Pull the version tag safely from the event
+          $cleanVersion = $githubEvent.release.tag_name
+          
+          # 4. Force the Win64 architecture constraint override format
+          $overrideUrl = "${installerUrl}|x64"
+          
+          # 5. Execute the update using system variables
+          wingetcreate update Citadel5-JP.GS-Calc -s -v $cleanVersion -u $overrideUrl
